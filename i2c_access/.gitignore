@@ -1,0 +1,3 @@
+*.o
+i2c_access
+tags
