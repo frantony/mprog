@@ -38,14 +38,16 @@ static inline struct ft2232_bb *master_to_ft2232_bb(struct i2c_master *c)
 	return container_of(c, struct ft2232_bb, master);
 }
 
-static inline int mpsse_flush(struct ftdi_context *ftdi)
+static inline int mpsse_flush(struct ft2232_bb *ftbb)
 {
 	uint8_t buf[1];
 	int ret;
 
 	buf[0] = SEND_IMMEDIATE;
 
-	ret = ftdi_write_data(ftdi, buf, 1);
+	ret = ftdi_write_data(ftbb->ftdi, buf, 1);
+
+	usleep(ftbb->usleep);
 
 	return ret;
 }
@@ -61,8 +63,6 @@ static int mpsse_set_data_bits_high_byte(struct ftdi_context *ftdi,
 	buf[2] = dir;
 
 	ret = ftdi_write_data(ftdi, buf, 3);
-
-	ret = mpsse_flush(ftdi);
 
 	return ret;
 }
@@ -105,8 +105,6 @@ static inline void ft2232_bb_setpins(struct ft2232_bb *ftbb)
 	 * then we simply setup it as an input line.
 	 */
 	mpsse_set_data_bits_high_byte(ftbb->ftdi, 0, ftbb->dir_mask);
-
-	usleep(ftbb->usleep);
 }
 
 static void i2c_setsda(struct ft2232_bb *ftbb, int state)
@@ -165,9 +163,13 @@ static void ft2232_bb_i2c_start(struct i2c_master *master)
 
 	/* I2C Start condition, data line goes low when clock is high */
 	i2c_setsda(ftbb, HIGH);
+	mpsse_flush(ftbb);
 	i2c_setscl(ftbb, HIGH);
+	mpsse_flush(ftbb);
 	i2c_setsda(ftbb, LOW);
+	mpsse_flush(ftbb);
 	i2c_setscl(ftbb, LOW);
+	mpsse_flush(ftbb);
 }
 
 static void ft2232_bb_i2c_stop(struct i2c_master *master)
@@ -176,9 +178,13 @@ static void ft2232_bb_i2c_stop(struct i2c_master *master)
 
 	/* I2C Stop condition, clock goes high when data is low */
 	i2c_setscl(ftbb, LOW);
+	mpsse_flush(ftbb);
 	i2c_setsda(ftbb, LOW);
+	mpsse_flush(ftbb);
 	i2c_setscl(ftbb, HIGH);
+	mpsse_flush(ftbb);
 	i2c_setsda(ftbb, HIGH);
+	mpsse_flush(ftbb);
 }
 
 static int ft2232_bb_i2c_rawwrite(struct i2c_master *master, uint8_t data)
@@ -199,6 +205,7 @@ static int ft2232_bb_i2c_rawwrite(struct i2c_master *master, uint8_t data)
 		/* Generate clock for 8 data bits */
 		i2c_setscl(ftbb, HIGH);
 		i2c_setscl(ftbb, LOW);
+		mpsse_flush(ftbb);
 	}
 
 	/* Neitralize sda */
@@ -206,14 +213,17 @@ static int ft2232_bb_i2c_rawwrite(struct i2c_master *master, uint8_t data)
 
 	/* Generate clock for ACK */
 	i2c_setscl(ftbb, HIGH);
+	mpsse_flush(ftbb);
 
 	/* Wait for clock to go high, clock stretching */
 	i2c_wait_scl_high(ftbb);
+	mpsse_flush(ftbb);
 
 	/* Clock high, check ACK */
 	ack = i2c_getsda(ftbb);
 
 	i2c_setscl(ftbb, LOW);
+	mpsse_flush(ftbb);
 
 	return ack;
 }
@@ -232,7 +242,9 @@ static void ft2232_bb_i2c_rawread(struct i2c_master *master,
 	for (t = 0; t < 8; t++) {
 		i2c_setscl(ftbb, LOW);
 		i2c_setscl(ftbb, HIGH);
+		mpsse_flush(ftbb);
 		i2c_wait_scl_high(ftbb);
+		mpsse_flush(ftbb);
 		inData = (inData << 1) | i2c_getsda(ftbb);
 	}
 
@@ -242,12 +254,15 @@ static void ft2232_bb_i2c_rawread(struct i2c_master *master,
 	} else {
 		i2c_setsda(ftbb, HIGH);
 	}
+	mpsse_flush(ftbb);
 
 	i2c_setscl(ftbb, HIGH);
+	mpsse_flush(ftbb);
 
 	/* Wait for clock to go high, clock stretching */
 	i2c_wait_scl_high(ftbb);
 	i2c_setscl(ftbb, LOW);
+	mpsse_flush(ftbb);
 
 	*data = inData;
 
