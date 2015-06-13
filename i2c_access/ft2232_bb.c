@@ -24,7 +24,8 @@ struct ft2232_bb {
 
 	struct ftdi_context *ftdi;
 	uint8_t scl_mask;
-	uint8_t sda_mask;
+	uint8_t sda_out_mask;
+	uint8_t sda_in_mask;
 	int usleep;
 
 	uint8_t dir_mask;
@@ -85,7 +86,7 @@ static inline void ft2232_bb_update_data_mask(struct ft2232_bb *ftbb)
 	ftbb->dir_mask = 0;
 
 	if (!ftbb->sda_state) {
-		ftbb->dir_mask |= ftbb->sda_mask;
+		ftbb->dir_mask |= ftbb->sda_out_mask;
 	}
 
 	if (!ftbb->scl_state) {
@@ -136,7 +137,7 @@ static int i2c_getsda(struct ft2232_bb *ftbb)
 
 	mpsse_read_data_bits_high_byte(ftbb, &t);
 
-	if (t & ftbb->sda_mask)
+	if (t & ftbb->sda_in_mask)
 		return 1;
 
 	return 0;
@@ -281,7 +282,8 @@ static struct i2c_master *ft2232_bb_probe(void)
 	/* < 100 kHz */
 	ftbb->usleep = 10;
 	ftbb->scl_mask = (1 << 5);
-	ftbb->sda_mask = (1 << 6);
+	ftbb->sda_out_mask = (1 << 6);
+	ftbb->sda_in_mask = (1 << 7);
 
 	/* reset pins to default neutral state */
 	ftbb->sda_state = HIGH;
