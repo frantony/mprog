@@ -12,6 +12,7 @@ LDFLAGS = -lftdi $(MPSSE_LDFLAGS)
 i2c_access: \
 		i2c_access_main.o \
 		driver.o \
+		devplugin.o \
 		ft2232_bb.o \
 		$(MPSSE_DRIVER) \
 		memory_display.o \
@@ -20,6 +21,9 @@ i2c_access: \
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 driver.o: driver.c common.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+devplugin.o: devplugin.c common.h list.h i2c_master.h i2c_devplugin.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ft2232_bb.o: ft2232_bb.c common.h i2c_master.h

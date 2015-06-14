@@ -51,3 +51,12 @@ void i2c_remove_master(struct i2c_master *master)
 
 	driver->remove(master);
 }
+
+void i2c_driver_list(void)
+{
+	struct i2c_driver *driver;
+
+	list_for_each_entry(driver, &registered_drivers, node) {
+		printf("    %s\n", driver->name);
+        }
+}
