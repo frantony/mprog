@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "list.h"
 
 struct i2c_master {
 	struct i2c_driver *driver;
@@ -15,6 +16,8 @@ struct i2c_master {
 };
 
 struct i2c_driver {
+	struct list_head node;
+
 	const char *name;
 
 	struct i2c_master *(*probe)(void);

@@ -2,31 +2,21 @@
 #include "common.h"
 #include "i2c_master.h"
 
-#define DRIVERS_MAX 4
-struct i2c_driver *registered_drivers[DRIVERS_MAX];
-int registered_driver_count = 0;
+LIST_HEAD(registered_drivers);
 
 void i2c_driver_register(struct i2c_driver *driver)
 {
 //	printf("driver_register:%s\n", driver->name);
 
-	if (registered_driver_count >= DRIVERS_MAX) {
-		printf("Tried to register more than %i driver "
-			 "interfaces.\n", DRIVERS_MAX);
-		BUG();
-	}
-
-	registered_drivers[registered_driver_count] = driver;
-	registered_driver_count++;
+	list_add_tail(&driver->node, &registered_drivers);
 }
 
 struct i2c_master *i2c_probe_master(char *name)
 {
 	struct i2c_master *master;
-	int j;
+	struct i2c_driver *driver;
 
-	for (j = 0; j < registered_driver_count; j++) {
-		struct i2c_driver *driver = registered_drivers[j];
+	list_for_each_entry(driver, &registered_drivers, node) {
 		if (!strcmp(driver->name, name)) {
 			master = driver->probe();
 			if (master) {
