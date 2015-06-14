@@ -138,4 +138,17 @@ static inline int i2c_begin_read(struct i2c_master *master, uint8_t addr)
 	return i2c_rawwrite(master, (addr << 1) | 1);
 }
 
+static inline int i2c_check_addr(struct i2c_master *master, uint8_t addr)
+{
+	int ret;
+
+	i2c_stop(master);
+
+	i2c_start(master);
+	ret = i2c_begin_write(master, addr);
+	i2c_stop(master);
+
+	return ret;
+}
+
 #endif /* _I2C_MASTER_H_ */

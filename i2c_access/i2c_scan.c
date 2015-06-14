@@ -14,11 +14,9 @@ void i2c_scan(struct i2c_master *master, int min, int max)
 	}
 	printf("\n");
 
-	i2c_stop(master);
-
-	for (i = 0; ; i += 2) {
-		if (i % 0x20 == 0x00) {
-			printf("%02x: ", i >> 1);
+	for (i = 0; ; i ++) {
+		if (i % 0x10 == 0x00) {
+			printf("%02x: ", i);
 		}
 
 		if (i < (min << 1)) {
@@ -26,21 +24,19 @@ void i2c_scan(struct i2c_master *master, int min, int max)
 			continue;
 		}
 
-		i2c_start(master);
-		if (i2c_rawwrite(master, i)) {
+		if (i2c_check_addr(master, i)) {
 			printf("-- ");
 		} else {
-			printf("%02x ", i >> 1);
-		}
-		i2c_stop(master);
-
-		if (i % 0x20 == 0x1e) {
-			printf("\n");
+			printf("%02x ", i);
 		}
 
-		if (i == (max << 1)) {
+		if (i == max) {
 			printf("\n");
 			break;
+		}
+
+		if (i % 0x10 == 0xf) {
+			printf("\n");
 		}
 	}
 }
