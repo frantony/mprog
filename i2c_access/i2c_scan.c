@@ -1,9 +1,8 @@
 #include <stdio.h>
 
-#include "common.h"
-#include "i2c_master.h"
+#include "i2c_devplugin.h"
 
-void i2c_scan(struct i2c_master *master, int min, int max)
+static void i2c_scan(struct i2c_master *master, int min, int max)
 {
 	uint8_t i;
 
@@ -40,3 +39,19 @@ void i2c_scan(struct i2c_master *master, int min, int max)
 		}
 	}
 }
+
+static int i2c_scan_probe(struct i2c_master *master, int argc, char **argv)
+{
+	(void)argc;
+	(void)argv;
+
+	i2c_scan(master, 0x03, 0x77);
+
+	return 0;
+}
+
+static struct i2c_devplugin i2c_scan_devplugin = {
+	.name = "scan",
+	.probe = i2c_scan_probe,
+};
+register_i2c_devplugin(i2c_scan_devplugin);
