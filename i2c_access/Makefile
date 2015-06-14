@@ -18,6 +18,7 @@ i2c_access: \
 		memory_display.o \
 		dc1307.o \
 		pca9545.o \
+		at24.o \
 		i2c_scan.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
@@ -34,6 +35,9 @@ dc1307.o: dc1307.c common.h i2c_master.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 pca9545.o: pca9545.c common.h list.h i2c_master.h i2c_devplugin.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+at24.o: at24.c common.h list.h i2c_master.h i2c_devplugin.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ft2232_mpsse.o: ft2232_mpsse.c common.h i2c_master.h
