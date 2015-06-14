@@ -1,5 +1,4 @@
 #include <string.h>
-#include "common.h"
 #include "i2c_master.h"
 
 LIST_HEAD(registered_drivers);
