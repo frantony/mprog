@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <inttypes.h>
 #include <linux/swab.h>
 
 #include "common.h"
@@ -22,7 +23,7 @@ int memory_display(const void *addr, loff_t offs, unsigned nbytes, int size, int
 		uint8_t *ucp = (u_char *)linebuf;
 		unsigned count = 52;
 
-		printf("%08llx:", offs);
+		printf("%08" PRIx64 ":", offs);
 		linebytes = (nbytes > DISP_LINE_LEN) ? DISP_LINE_LEN : nbytes;
 
 		for (i = 0; i < linebytes; i += size) {
