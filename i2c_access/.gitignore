@@ -1,3 +1,4 @@
 *.o
+*.d
 i2c_access
 tags
