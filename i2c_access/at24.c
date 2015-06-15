@@ -43,20 +43,13 @@ static int i2c_at24_probe(struct i2c_master *master, int argc, char **argv)
 	return 0;
 }
 
-static struct i2c_devplugin i2c_at24c02_devplugin = {
-	.name = "at24c02",
-	.probe = i2c_at24_probe,
-};
-register_i2c_devplugin(i2c_at24c02_devplugin);
+#define AT24_PLUGIN(_pluginname) \
+	static struct i2c_devplugin at24_plugin_##_pluginname = { \
+		.name = #_pluginname, \
+		.probe = i2c_at24_probe, \
+	}; \
+	register_i2c_devplugin(at24_plugin_##_pluginname);
 
-static struct i2c_devplugin i2c_spd_devplugin = {
-	.name = "spd",
-	.probe = i2c_at24_probe,
-};
-register_i2c_devplugin(i2c_spd_devplugin);
-
-static struct i2c_devplugin i2c_at24c1024_devplugin = {
-	.name = "at24c1024",
-	.probe = i2c_at24_probe,
-};
-register_i2c_devplugin(i2c_at24c1024_devplugin);
+AT24_PLUGIN(at24c02);
+AT24_PLUGIN(spd);
+AT24_PLUGIN(at24c1024);
