@@ -1,10 +1,11 @@
 CC = gcc
 
-#MPSSE_CFLAGS = -Ilibmpsse-read-only/src
-#MPSSE_LDFLAGS = libmpsse-read-only/src/libmpsse.a
-##MPSSE_LDFLAGS = -Llibmpsse-read-only/src -lmpsse
-#MPSSE_DRIVER=ft2232_mpsse.c
-MPSSE_DRIVER=
+ifeq ($(CONFIG_LIBMPSSE), yes)
+# svn checkout  http://libmpsse.googlecode.com/svn/trunk libmpsse-read-only
+MPSSE_CFLAGS = -Ilibmpsse-read-only/src
+MPSSE_LDFLAGS = -Llibmpsse-read-only/src -lmpsse
+MPSSE_DRIVER=ft2232_mpsse.c
+endif
 
 CFLAGS = -W -Wall $(MPSSE_CFLAGS)
 CPPFLAGS = -MD -MP
