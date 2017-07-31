@@ -9,7 +9,7 @@ endif
 
 CFLAGS = -W -Wall $(MPSSE_CFLAGS)
 CPPFLAGS = -MD -MP
-LDFLAGS = -lftdi $(MPSSE_LDFLAGS)
+LDFLAGS = -lftdi $(MPSSE_LDFLAGS) -lconfuse
 
 SRC = i2c_access_main.c \
 	driver.c \
@@ -20,6 +20,7 @@ SRC = i2c_access_main.c \
 	dc1307.c \
 	pca9545.c \
 	at24.c \
+	tps544c25.c \
 	i2c_scan.c
 
 i2c_access: $(SRC:%.c=%.o)
