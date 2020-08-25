@@ -21,6 +21,7 @@ SRC = i2c_access_main.c \
 	pca9545.c \
 	at24.c \
 	tps544c25.c \
+	lp87524.c \
 	i2c_scan.c
 
 i2c_access: $(SRC:%.c=%.o)
