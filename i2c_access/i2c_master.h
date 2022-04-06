@@ -20,7 +20,7 @@ struct i2c_driver {
 
 	const char *name;
 
-	struct i2c_master *(*probe)(void);
+	struct i2c_master *(*probe)(char *);
 	void (*remove)(struct i2c_master *);
 };
 

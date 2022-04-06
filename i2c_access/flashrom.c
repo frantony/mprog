@@ -28,7 +28,7 @@
  * needle and remove everything from the first occurrence of needle to the next
  * delimiter from haystack.
  */
-static char *extract_param(const char *const *haystack, const char *needle, const char *delim)
+char *extract_param(const char *const *haystack, const char *needle, const char *delim)
 {
 	char *param_pos, *opt_pos, *rest;
 	char *opt = NULL;
@@ -37,8 +37,7 @@ static char *extract_param(const char *const *haystack, const char *needle, cons
 
 	needlelen = strlen(needle);
 	if (!needlelen) {
-		msg_gerr("%s: empty needle! Please report a bug at "
-			 "flashrom@flashrom.org\n", __func__);
+		printf("%s: empty needle!\n", __func__);
 		return NULL;
 	}
 	/* No programmer parameters given. */
@@ -69,7 +68,7 @@ static char *extract_param(const char *const *haystack, const char *needle, cons
 		/* Return an empty string if the parameter was empty. */
 		opt = malloc(optlen + 1);
 		if (!opt) {
-			msg_gerr("Out of memory!\n");
+			printf("Out of memory!\n");
 			exit(1);
 		}
 		strncpy(opt, opt_pos, optlen);

@@ -14,6 +14,7 @@ LDFLAGS = -lftdi $(MPSSE_LDFLAGS) -lconfuse
 SRC = i2c_access_main.c \
 	driver.c \
 	devplugin.c \
+	flashrom.c \
 	ft2232_bb.c \
 	$(MPSSE_DRIVER) \
 	memory_display.c \

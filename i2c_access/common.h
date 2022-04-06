@@ -48,4 +48,6 @@ static inline void *xzalloc(size_t size)
 
 int memory_display(const void *addr, loff_t offs, unsigned nbytes, int size, int swab);
 
+char *extract_param(const char *const *haystack, const char *needle, const char *delim);
+
 #endif /* __COMMON_H_ */

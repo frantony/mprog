@@ -269,18 +269,26 @@ static void ft2232_bb_i2c_rawread(struct i2c_master *master,
 	//printf("ft2232_bb_i2c_read: %02x\n", inData);
 }
 
-static struct i2c_master *ft2232_bb_probe(void)
+static struct i2c_master *ft2232_bb_probe(char *args)
 {
+	struct i2c_master *master;
 	struct ftdi_context *ftdi;
 	int ret;
 	struct ft2232_bb *ftbb;
+	const char *description;
+	const char *serial;
+
+	master = NULL;
+
+	description = extract_param((const char *const*)&args, "description", ",");
+	serial = extract_param((const char *const*)&args, "serial", ",");
 
 	if ((ftdi = ftdi_new()) == 0) {
 		fprintf(stderr, "ftdi_new failed\n");
 		goto error;
 	}
 
-	ret = ftdi_usb_open(ftdi, 0x0403, 0x6010);
+	ret = ftdi_usb_open_desc(ftdi, 0x0403, 0x6010, description, serial);
 	if (ret  < 0 && ret != -5) {
 		fprintf(stderr, "unable to open ftdi device: %d (%s)\n",
 			ret, ftdi_get_error_string(ftdi));
@@ -310,10 +318,18 @@ static struct i2c_master *ft2232_bb_probe(void)
 	ftbb->master.rawwrite = ft2232_bb_i2c_rawwrite;
 	ftbb->master.rawread = ft2232_bb_i2c_rawread;
 
-	return &ftbb->master;
+	master = &ftbb->master;
 
 error:
-	return NULL;
+	if (description) {
+		free((void *)description);
+	}
+
+	if (serial) {
+		free((void *)serial);
+	}
+
+	return master;
 }
 
 static void ft2232_bb_remove(struct i2c_master *master)

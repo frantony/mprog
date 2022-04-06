@@ -95,10 +95,12 @@ static void ft2232_mpsse_i2c_read(struct i2c_master *master,
 	}
 }
 
-static struct i2c_master *ft2232_mpsse_probe(void)
+static struct i2c_master *ft2232_mpsse_probe(char *args)
 {
 	struct mpsse_context *eeprom;
 	struct ft2232_mpsse *ftmpsse;
+
+	(void)args;
 
 	eeprom = MPSSE(I2C, ONE_HUNDRED_KHZ, MSB);
 	if (!eeprom || !eeprom->open) {
